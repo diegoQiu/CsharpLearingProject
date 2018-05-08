@@ -33,8 +33,8 @@ namespace 矿车选型
             str170_2 += "个,能带来年产量:";
             str170_3 += (mineCar170.numOfCar * mineCar170.loadWeight).ToString("f2");
             str170_3 += "吨,总金额为:";
-            str170_3 += mineCar170.totalAmount.ToString();
-            str170_3 += "万元";
+            str170_3 += mineCar170.totalAmount.ToString("f2");
+            str170_3 += "亿元";
             str170_4 += "推荐最小路宽值:";
             str170_4 += (3.5 * mineCar170.carWedth).ToString("f2");
             str170_4 += "米";
@@ -48,8 +48,8 @@ namespace 矿车选型
             str190_2 += "个,能带来年产量:";
             str190_3 +=( mineCar190.numOfCar * mineCar190.loadWeight).ToString("f2");
             str190_3 += "吨,总金额为:";
-            str190_3 += mineCar190.totalAmount.ToString();
-            str190_3 += "万元";
+            str190_3 += mineCar190.totalAmount.ToString("f2");
+            str190_3 += "亿元";
             str190_4 += "推荐最小路宽值:";
             str190_4 += (3.5 * mineCar190.carWedth).ToString("f2");
             str190_4 += "米";
@@ -63,8 +63,8 @@ namespace 矿车选型
             str240_2 += "个,能带来年产量:";
             str240_3 += (mineCar240.numOfCar * mineCar240.loadWeight).ToString("f2");
             str240_3 += "吨,总金额为:";
-            str240_3 += mineCar240.totalAmount.ToString();
-            str240_3 += "万元";
+            str240_3 += mineCar240.totalAmount.ToString("f2");
+            str240_3 += "亿元";
             str240_4 += "推荐最小路宽值:";
             str240_4 += (3.5 * mineCar240.carWedth).ToString("f2");
             str240_4 += "米";

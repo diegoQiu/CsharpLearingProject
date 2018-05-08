@@ -12,10 +12,9 @@ using System.Windows.Forms;
 
 namespace 矿车选型
 {
-
     public partial class Form2 : Form
     {
-
+        
         public Form2()
         { 
             InitializeComponent();
@@ -32,7 +31,8 @@ namespace 矿车选型
             Form3 f3 = new Form3();
             f3.Show();
             this.Hide();
-
+           
+            
             string value = this.comboBox1.SelectedItem.ToString();
             switch (value)
             {
@@ -53,19 +53,26 @@ namespace 矿车选型
     //类，每一个车即为一个类，170吨，190吨，240吨各为一个类
     public class mineCar190
     {
+
+        
         //int[] numbers = new int[3]{1,2,3};//定长 
-        static double[] loader = new double[5] { 16.5, 18, 22, 26, 34 };//五个铲的斗容
+        static double[,] loader = new double[7,7] { 
+            {10, 16.5, 18,0,0,0,0 },{10,16.5,18,22,26,0,0 },
+            {  16.5, 18,22,26,34,0,0},{16.5, 18,22,26,34,0,0 },
+            { 18,22,26,34,0,0,0 },{ 26,34,45,51.2,62.7,0,0},{ 26,34,45,51.2,62.7,0,0}
+        };//铲的斗容
+        public static int tonPick;
         public static double carWedth = 6.95;
         public static double Volume = 108;
         public static double EVW = 130;
-        public static double GVW = 190;
+        public static int tonnage = 190;
         public static double RollR = 1.633;
         public static double Power = 590;
         public static double RedRatio = 50.1;
         public static double MaEff = 0.94;
         public static double volumeOfLoader;
         public static double loadWeight =getLoad();//难点
-        public static double haulWeight = 130+loadWeight;
+        public static double haulWeight = EVW+loadWeight;
         public static double production = getPro();
         public static double cycletime;
         public static double numOfCar=Math.Ceiling( mineInput.exPro/loadWeight);//矿车数
@@ -73,7 +80,7 @@ namespace 矿车选型
         public static double numOfLoader;//铲数
         public static double priceOfCar=1900;//单位万元
         public static double priceOfLoader=volumeOfLoader*40*6.3;
-        public static double totalAmount=numOfCar*priceOfCar+numOfShovel*priceOfLoader;
+        public static double totalAmount=(numOfCar*priceOfCar+numOfShovel*priceOfLoader)/10000;
 
 
         //计算铲数和实际装载质量
@@ -81,15 +88,33 @@ namespace 矿车选型
         {
             double maxLoad = 0;//动态更新最大装载容积
             //numOfLoader随着maxLoad更新时记录j的值，即为铲数。
-            for (int i = 0; i < 5; i++)
+            switch (tonnage)
             {
-                for (int j = 1; j * material.fillFactor * loader[i] <= Volume; j++)
+                case 108: tonPick = 0; break;
+                case 109: tonPick = 0; break;
+                case 136: tonPick = 1; break;
+                case 154: tonPick = 2; break;
+                case 172: tonPick = 2; break;
+                case 186: tonPick = 3; break;
+                case 190: tonPick = 3; break;
+                case 217: tonPick = 4; break;
+                case 220: tonPick = 4; break;
+                case 326: tonPick = 5; break;
+                case 363: tonPick = 6; break;
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                if (loader[tonPick, i] == 0)
                 {
-                    if (j * material.fillFactor * loader[i] > maxLoad)
+                    continue;
+                }
+                for (int j = 1; j * material.fillFactor * loader[tonPick,i] <= Volume; j++)
+                {
+                    if (j * material.fillFactor * loader[tonPick,i] > maxLoad)
                     {
-                        maxLoad = j * material.fillFactor * loader[i];
+                        maxLoad = j * material.fillFactor * loader[tonPick,i];
                         mineCar190.numOfLoader = j;
-                        volumeOfLoader = loader[i];
+                        volumeOfLoader = loader[tonPick,i];
                     }
                 }
             }
@@ -123,11 +148,16 @@ namespace 矿车选型
 
     public class mineCar170
     {
-        static double[] loader = new double[5] { 16.5, 18, 22, 26, 34 };//五个铲的斗容
+        static double[,] loader = new double[7, 7] {
+            {10, 16.5, 18,0,0,0,0 },{10,16.5,18,22,26,0,0 },
+            {  16.5, 18,22,26,34,0,0},{16.5, 18,22,26,34,0,0 },
+            { 18,22,26,34,0,0,0 },{ 26,34,45,51.2,62.7,0,0},{ 26,34,45,51.2,62.7,0,0}
+        };//铲的斗容
+        public static int tonPick;
         public static double carWedth = 6.42;
         public static double Volume = 93.5;
         public static double EVW = 110;
-        public static double GVW = 170;
+        public static int tonnage = 170;
         public static double RollR = 1.536;
         public static double Power = 590;
         public static double RedRatio = 30.36;
@@ -142,23 +172,41 @@ namespace 矿车选型
         public static double numOfLoader;//铲数
         public static double priceOfCar = 1700;//单位万元
         public static double priceOfLoader = volumeOfLoader * 40 * 6.3;
-        public static double totalAmount = numOfCar * priceOfCar + numOfShovel * priceOfLoader;
+        public static double totalAmount = (numOfCar * priceOfCar + numOfShovel * priceOfLoader)/10000;
 
 
         //计算铲数和实际装载质量
         static double getLoad()
         {
             double maxLoad = 0;//动态更新最大装载容积
-            //numOfLoader随着maxLoad更新时记录j的值，即为铲数。
-            for (int i = 0; i < 5; i++)
+                               //numOfLoader随着maxLoad更新时记录j的值，即为铲数。
+            switch (tonnage)
             {
-                for (int j = 1; j * material.fillFactor * loader[i] <= Volume; j++)
+                case 108: tonPick = 0; break;
+                case 109: tonPick = 0; break;
+                case 136: tonPick = 1; break;
+                case 154: tonPick = 2; break;
+                case 172: tonPick = 2; break;
+                case 186: tonPick = 3; break;
+                case 190: tonPick = 3; break;
+                case 217: tonPick = 4; break;
+                case 220: tonPick = 4; break;
+                case 326: tonPick = 5; break;
+                case 363: tonPick = 6; break;
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                if (loader[tonPick, i] == 0)
                 {
-                    if (j * material.fillFactor * loader[i] > maxLoad)
+                    continue;
+                }
+                for (int j = 1; j * material.fillFactor * loader[tonPick,i] <= Volume; j++)
+                {
+                    if (j * material.fillFactor * loader[tonPick,i] > maxLoad)
                     {
-                        maxLoad = j * material.fillFactor * loader[i];
+                        maxLoad = j * material.fillFactor * loader[tonPick,i];
                         mineCar170.numOfLoader = j;
-                        volumeOfLoader = loader[i];
+                        volumeOfLoader = loader[tonPick,i];
                     }
                 }
             }
@@ -192,11 +240,16 @@ namespace 矿车选型
 
     public class mineCar240
     {
-        static double[] loader = new double[5] { 16.5, 18, 22, 26, 34 };//五个铲的斗容
+        static double[,] loader = new double[7, 7] {
+            {10, 16.5, 18,0,0,0,0 },{10,16.5,18,22,26,0,0 },
+            {  16.5, 18,22,26,34,0,0},{16.5, 18,22,26,34,0,0 },
+            { 18,22,26,34,0,0,0 },{ 26,34,45,51.2,62.7,0,0},{ 26,34,45,51.2,62.7,0,0}
+        };//铲的斗容
+        public static int tonPick;
         public static double carWedth = 8;
         public static double Volume = 138;
         public static double EVW = 160;
-        public static double GVW = 240;
+        public static int tonnage = 240;
         public static double RollR = 1.743;
         public static double Power = 764;
         public static double RedRatio = 40.47;
@@ -211,23 +264,41 @@ namespace 矿车选型
         public static double numOfLoader;//铲数
         public static double priceOfCar = 2400;//单位万元
         public static double priceOfLoader = volumeOfLoader * 40 * 6.3;
-        public static double totalAmount = numOfCar * priceOfCar + numOfShovel * priceOfLoader;
+        public static double totalAmount = (numOfCar * priceOfCar + numOfShovel * priceOfLoader)/10000;
 
 
         //计算铲数和实际装载质量
         static double getLoad()
         {
             double maxLoad = 0;//动态更新最大装载容积
-            //numOfLoader随着maxLoad更新时记录j的值，即为铲数。
-            for (int i = 0; i < 5; i++)
+                               //numOfLoader随着maxLoad更新时记录j的值，即为铲数。
+            switch (tonnage)
             {
-                for (int j = 1; j * material.fillFactor * loader[i] <= Volume; j++)
+                case 108: tonPick = 0; break;
+                case 109: tonPick = 0; break;
+                case 136: tonPick = 1; break;
+                case 154: tonPick = 2; break;
+                case 172: tonPick = 2; break;
+                case 186: tonPick = 3; break;
+                case 190: tonPick = 3; break;
+                case 217: tonPick = 4; break;
+                case 220: tonPick = 4; break;
+                case 326: tonPick = 5; break;
+                case 363: tonPick = 6; break;
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                if (loader[tonPick, i] == 0)
                 {
-                    if (j * material.fillFactor * loader[i] > maxLoad)
+                    continue;
+                }
+                for (int j = 1; j * material.fillFactor * loader[tonPick,i] <= Volume; j++)
+                {
+                    if (j * material.fillFactor * loader[tonPick,i] > maxLoad)
                     {
-                        maxLoad = j * material.fillFactor * loader[i];
+                        maxLoad = j * material.fillFactor * loader[tonPick,i];
                         mineCar240.numOfLoader = j;
-                        volumeOfLoader = loader[i];
+                        volumeOfLoader = loader[tonPick,i];
                     }
                 }
             }
@@ -273,4 +344,5 @@ namespace 矿车选型
         public static double fillFactor;
         public static double density;
     }
+    
 }
