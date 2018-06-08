@@ -59,7 +59,7 @@ namespace 矿车选型
         static double[,] loader = new double[7,7] { 
             {10, 16.5, 18,0,0,0,0 },{10,16.5,18,22,26,0,0 },
             {  16.5, 18,22,26,34,0,0},{16.5, 18,22,26,34,0,0 },
-            { 18,22,26,34,0,0,0 },{ 26,34,45,51.2,62.7,0,0},{ 26,34,45,51.2,62.7,0,0}
+            { 18,22,26,34,45,51.2,62.7 },{ 26,34,45,51.2,62.7,0,0},{ 26,34,45,51.2,62.7,0,0}
         };//铲的斗容
         public static int tonPick;
         public static double carWedth = 6.95;
@@ -74,9 +74,10 @@ namespace 矿车选型
         public static double loadWeight =getLoad();//难点
         public static double haulWeight = EVW+loadWeight;
         public static double production = getPro();
+        public static double cycletime0;
         public static double cycletime;
-        public static double numOfCar=Math.Ceiling( mineInput.exPro/loadWeight);//矿车数
-        public static double numOfShovel = Math.Ceiling(numOfCar * numOfLoader * 39 / (numOfLoader * 39 + cycletime * 60));//电铲数
+        public static double numOfCar=Math.Ceiling( mineInput.exPro*10000/production);//矿车数
+        public static double numOfShovel = Math.Ceiling(numOfCar * numOfLoader * 39 / ( cycletime * 60));//电铲数
         public static double numOfLoader;//铲数
         public static double priceOfCar=1900;//单位万元
         public static double priceOfLoader=volumeOfLoader*40*6.3;
@@ -126,21 +127,24 @@ namespace 矿车选型
         {
             double loadtime = numOfLoader * 39 / 60;//铲数*周期
             double effctiveDegree = mineInput.exDre - 0.02;
-            double TractionH = effctiveDegree * 9.8 * haulWeight;
+            double TractionH = effctiveDegree * 10 * haulWeight;
             double TorqueW = TractionH * mineCar190.RollR;
             double TorqueE = TorqueW / 2 / mineCar190.RedRatio/mineCar190.MaEff;
             double Espeed = 590 * 9550 / (TorqueE * 1000);
-            double Cspeed = 2 * 3.14 * mineCar190.RollR * Espeed / mineCar190.RedRatio / 60 * 3.6;//km每小时
-            double haultime = mineInput.exDis / Cspeed * 60;
-            double dumptime = 2;
+            double Cspeed = 2 * 3.14 * mineCar190.RollR * Espeed / mineCar190.RedRatio / 60 ;//米每秒
+            double haultime = mineInput.exDis *1000/ Cspeed /60;
+            double dumptime = 1;
             double reDegree = mineInput.exDre + 0.02;
             double reTration = reDegree * 9.8 * mineCar190.EVW;
             double reTorqueW = reTration * mineCar190.RollR;
             double reTorqueE = reTorqueW / 2 / mineCar190.RedRatio /mineCar190.MaEff;
             double reEspeed = 590 * 9550 / (reTorqueE * 1000);
-            double reCspeed = 2 * 3.14 * mineCar190.RollR * reEspeed / mineCar190.RedRatio / 60 * 3.6;
-            double retime = mineInput.exDis/ reCspeed * 60;
-            mineCar190.cycletime= loadtime + haultime + dumptime + retime;
+            double reCspeed = 2 * 3.14 * mineCar190.RollR * reEspeed / mineCar190.RedRatio / 60 ;
+            double retime = mineInput.exDis*1000/ reCspeed/60 ;
+            mineCar190.cycletime0= loadtime + haultime + dumptime + retime;
+            double matchPoint = Math.Ceiling(cycletime0 / loadtime);
+            double waitTime = matchPoint * loadtime - cycletime0;
+            cycletime = cycletime0 + waitTime;
             double ans=365*mineInput.exAvi*24*55/cycletime*loadWeight;
             return ans;  
         }
@@ -167,8 +171,9 @@ namespace 矿车选型
         public static double haulWeight = 110 + loadWeight;
         public static double production = getPro();
         public static double cycletime;
-        public static double numOfCar = Math.Ceiling(mineInput.exPro / loadWeight);//矿车数
-        public static double numOfShovel = Math.Ceiling(numOfCar * numOfLoader * 39 / (numOfLoader * 39 + cycletime * 60));//电铲数
+        public static double cycletime0;
+        public static double numOfCar = Math.Ceiling(mineInput.exPro*10000 / production);//矿车数
+        public static double numOfShovel = Math.Ceiling(numOfCar * numOfLoader * 39 / ( cycletime * 60));//电铲数
         public static double numOfLoader;//铲数
         public static double priceOfCar = 1700;//单位万元
         public static double priceOfLoader = volumeOfLoader * 40 * 6.3;
@@ -186,7 +191,7 @@ namespace 矿车选型
                 case 109: tonPick = 0; break;
                 case 136: tonPick = 1; break;
                 case 154: tonPick = 2; break;
-                case 172: tonPick = 2; break;
+                case 170: tonPick = 2; break;
                 case 186: tonPick = 3; break;
                 case 190: tonPick = 3; break;
                 case 217: tonPick = 4; break;
@@ -224,7 +229,7 @@ namespace 矿车选型
             double Espeed = 590 * 9550 / (TorqueE * 1000);
             double Cspeed = 2 * 3.14 * mineCar170.RollR * Espeed / mineCar170.RedRatio / 60 * 3.6;//km每小时
             double haultime = mineInput.exDis / Cspeed * 60;
-            double dumptime = 2;
+            double dumptime = 1;
             double reDegree = mineInput.exDre + 0.02;
             double reTration = reDegree * 9.8 * mineCar170.EVW;
             double reTorqueW = reTration * mineCar170.RollR;
@@ -232,7 +237,10 @@ namespace 矿车选型
             double reEspeed = 590 * 9550 / (reTorqueE * 1000);
             double reCspeed = 2 * 3.14 * mineCar170.RollR * reEspeed / mineCar170.RedRatio / 60 * 3.6;
             double retime = mineInput.exDis / reCspeed * 60;
-            mineCar170.cycletime = loadtime + haultime + dumptime + retime;
+            mineCar170.cycletime0 = loadtime + haultime + dumptime + retime;
+            double matchPoint = cycletime0 / loadtime;
+            double waitTime = matchPoint * loadtime - cycletime0;
+            cycletime = cycletime0 + waitTime;
             double ans = 365 * mineInput.exAvi * 24 * 55 / cycletime * loadWeight;
             return ans;
         }
@@ -259,8 +267,9 @@ namespace 矿车选型
         public static double haulWeight = 160 + loadWeight;
         public static double production = getPro();
         public static double cycletime;
-        public static double numOfCar = Math.Ceiling(mineInput.exPro / loadWeight);//矿车数
-        public static double numOfShovel = Math.Ceiling(numOfCar * numOfLoader * 39 / (numOfLoader * 39 + cycletime * 60));//电铲数
+        public static double cycletime0;
+        public static double numOfCar = Math.Ceiling(mineInput.exPro*10000 / production);//矿车数
+        public static double numOfShovel = Math.Ceiling(numOfCar * numOfLoader * 39 / ( cycletime * 60));//电铲数
         public static double numOfLoader;//铲数
         public static double priceOfCar = 2400;//单位万元
         public static double priceOfLoader = volumeOfLoader * 40 * 6.3;
@@ -278,11 +287,12 @@ namespace 矿车选型
                 case 109: tonPick = 0; break;
                 case 136: tonPick = 1; break;
                 case 154: tonPick = 2; break;
-                case 172: tonPick = 2; break;
+                case 170: tonPick = 2; break;
                 case 186: tonPick = 3; break;
                 case 190: tonPick = 3; break;
                 case 217: tonPick = 4; break;
                 case 220: tonPick = 4; break;
+                case 240: tonPick = 4; break;
                 case 326: tonPick = 5; break;
                 case 363: tonPick = 6; break;
             }
@@ -310,13 +320,13 @@ namespace 矿车选型
         {
             double loadtime = numOfLoader * 39 / 60;//铲数*周期
             double effctiveDegree = mineInput.exDre - 0.02;
-            double TractionH = effctiveDegree * 9.8 * haulWeight;
+            double TractionH = effctiveDegree * 10 * haulWeight;
             double TorqueW = TractionH * mineCar240.RollR;
             double TorqueE = TorqueW / 2 / mineCar240.RedRatio / mineCar240.MaEff;
             double Espeed = 764 * 9550 / (TorqueE * 1000);
             double Cspeed = 2 * 3.14 * mineCar240.RollR * Espeed / mineCar240.RedRatio / 60 * 3.6;//km每小时
             double haultime = mineInput.exDis / Cspeed * 60;
-            double dumptime = 2;
+            double dumptime = 1;
             double reDegree = mineInput.exDre + 0.02;
             double reTration = reDegree * 9.8 * mineCar240.EVW;
             double reTorqueW = reTration * mineCar240.RollR;
@@ -324,7 +334,10 @@ namespace 矿车选型
             double reEspeed = 764 * 9550 / (reTorqueE * 1000);
             double reCspeed = 2 * 3.14 * mineCar240.RollR * reEspeed / mineCar240.RedRatio / 60 * 3.6;
             double retime = mineInput.exDis / reCspeed * 60;
-            mineCar240.cycletime = loadtime + haultime + dumptime + retime;
+            mineCar240.cycletime0 = loadtime + haultime + dumptime + retime;
+            double matchPoint = cycletime0 / loadtime;
+            double waitTime = matchPoint * loadtime - cycletime0;
+            cycletime = cycletime0 + waitTime;
             double ans = 365 * mineInput.exAvi * 24 * 55 / cycletime * loadWeight;
             return ans;
         }
